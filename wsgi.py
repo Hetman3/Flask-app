@@ -1,4 +1,4 @@
 from app import app
 
-# Лог, щоб підтвердити завантаження
-print("=== WSGI file loaded ===")
+if __name__ == "__main__":
+    app.run()
