@@ -3,7 +3,9 @@ import psycopg2
 import json
 
 def get_db_connection():
+    print("=== Connecting to database ===")
     conn = psycopg2.connect(os.getenv("DATABASE_URL"))
+    print("=== Connected successfully ===")
     return conn
 
 def create_table():
@@ -23,11 +25,11 @@ def create_table():
     conn.commit()
     cursor.close()
     conn.close()
+    print("=== Table created or already exists ===")
 
 def insert_payment(data):
     conn = get_db_connection()
     cursor = conn.cursor()
-
     cursor.execute("""
         INSERT INTO payments (order_id, status, amount, currency, payment_id, raw_data)
         VALUES (%s, %s, %s, %s, %s, %s);
@@ -39,7 +41,6 @@ def insert_payment(data):
         data.get("payment_id"),
         json.dumps(data)
     ))
-
     conn.commit()
     cursor.close()
     conn.close()
