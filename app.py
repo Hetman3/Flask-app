@@ -1,3 +1,4 @@
+from database import create_table, insert_payment
 from flask import Flask, request, jsonify
 import os
 import base64
