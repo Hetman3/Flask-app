@@ -3,16 +3,17 @@ import os
 import base64
 import hashlib
 import json
+from multiprocessing import Process
 
 app = Flask(__name__)
 PRIVATE_KEY = os.getenv("LIQPAY_PRIVATE_KEY")
 
 @app.route("/")
 def index():
-    return "LiqPay Flask is running!"
+    return "Flask + LiqPay callback is running!"
 
 @app.route("/liqpay_callback", methods=["POST"])
-def callback():
+def liqpay_callback():
     data = request.form.get("data")
     signature = request.form.get("signature")
 
@@ -25,11 +26,16 @@ def callback():
         return "Invalid signature", 403
 
     decoded = json.loads(base64.b64decode(data).decode())
-    print("LiqPay payment callback:")
+    print("LiqPay callback received:")
     print(json.dumps(decoded, indent=2, ensure_ascii=False))
 
     return jsonify({"status": "ok"}), 200
 
-if __name__ == "__main__":
+def run_flask():
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run(debug=True, host="0.0.0.0", port=port)
+
+if __name__ == '__main__':
+    flask_process = Process(target=run_flask)
+    flask_process.start()
+    flask_process.join()
